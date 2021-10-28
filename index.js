@@ -29,12 +29,13 @@ app.use(
 );
 
 
-const port = 3000;
+const port = 4444;
 
 
-const BasePath = 'C:\\'; // 베이스 경로 FTTP
+const BasePath = 'E:\\'; // 베이스 경로 FTTP
 const id = 'cefc3454779723c9c6228df6621720f7'; // fttp
 const password = 'cefc3454779723c9c6228df6621720f7'; // fttp
+
 
 
 app.get('/login', (req, res)=>{
@@ -59,7 +60,18 @@ app.post('/login', (req, res)=>{
 })
 
 
+// 모든 / 경로에게 옵션 주기
+app.use('/',function(req, res,next) {
+    if( req.session.auth == undefined || req.session.auth == '' || req.session.auth == null ) {
+        res.send('<script>location.href="/login"</script>');
+    }else
+        next(); // 그냥 넘겨주기
+});
+
+app.use(express.static(path.join(BasePath, '/')));
+
 app.get('/', async (req, res)=>{
+
     
     if( req.session.auth == 'verify' ) {
 
@@ -104,42 +116,6 @@ app.get('/', async (req, res)=>{
 
 })
 
-
-
-
-app.get('/view', function(req, res){
-
-    if( req.session.auth == 'verify' ) {
-
-        var requestFile = req.query.file;
-        var requestFilename = req.query.filename;
-
-
-        fs.readFile(BasePath + requestFile, (err, data)=> {
-
-
-            res.writeHead(200, { "Content-Disposition": "filename=" + encodeURI( requestFilename ),
-            'Content-Type': mime.lookup(requestFile) + '; charset=utf-8' });
-
-            res.end(data);
-        })
-    } else 
-        res.send(' <script>location.href="/login"</script> ');
-
-  });
-
-
-app.get('/download', function(req, res){
-        
-    if( req.session.auth == 'verify' ) {
-        var requestFile = req.query.file;
-
-        const file = BasePath + requestFile;
-        res.download(file); // Set disposition and send it.
-    } else 
-    res.send(' <script>location.href="/login"</script> ');
-
-  });
 
 
 app.listen( port, ()=>{
