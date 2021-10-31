@@ -80,9 +80,10 @@ app.get('/', async (req, res)=>{
 
         
 
-        if ( currentPath.charAt( currentPath -1 ) != '\\' || currentPath.charAt( currentPath -1 ) != '/' )
-            currentPath+='\\';
-    
+        if ( currentPath.charAt( currentPath -1 ) != '\\' || currentPath.charAt( currentPath -1 ) != '/' ){
+            //currentPath+='\\'; // 윈도우
+            currentPath+='/'; // 리눅스
+        }
 
 
         var fileList = await fsm.getFileList( currentPath ); 
